@@ -24,7 +24,7 @@ for (const folder of commandFolders) {
 }
 
 client.once(Events.ClientReady, () => {
-	console.log('Ready!');
+	console.log('Main block is up and running!');
 });
 
 client.on(Events.InteractionCreate, async interaction => {
