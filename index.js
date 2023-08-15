@@ -1,7 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
-const { token } = require('./config.json');
+const { token, clientId, guildId } = require('./config.json');
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
@@ -29,19 +29,21 @@ client.once(Events.ClientReady, () => {
 
 client.on(Events.InteractionCreate, async interaction => {
 	if (!interaction.isChatInputCommand()) return;
-
+	// console.log('inside interaction create')
 	const command = client.commands.get(interaction.commandName);
 
 	if (!command) return;
 
 	try {
+		// console.log('inside try')
 		await command.execute(interaction);
+		// console.log('after execution')
 	} catch (error) {
 		console.error(error);
 		if (interaction.replied || interaction.deferred) {
-			await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
+			await interaction.followUp({ content: '[Follow Up]There was an error while executing this command!', ephemeral: true });
 		} else {
-			await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+			await interaction.reply({ content: '[Reply]There was an error while executing this command!', ephemeral: true });
 		}
 	}
 });
