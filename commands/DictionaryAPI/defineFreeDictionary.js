@@ -33,16 +33,28 @@ module.exports = {
             const [answer] = list;
             // console.log("here goes answer: ", typeof answer, answer)
             const phonetics = []
-            answer.phonetics.map((phonetic) => {
-                if(phonetic.text) {
-                    phonetics.push(phonetic.text)
+            if (answer.phonetics.length > 0){
+                answer.phonetics.map((phonetic) => {
+                    if(phonetic.text) {
+                        phonetics.push(phonetic.text)
+                    }
+            })}
+
+            const descriptionField = () => {
+                if (phonetics.length === 0) {
+                    return "No phonetic provided"
+                } else if (phonetics.length === 1) {
+                    return phonetics[0]
+                } else {
+                    return phonetics.join(' or ')
                 }
-            })
-            // console.log("phonetics: ", phonetics)
+            }
+
+            console.log("phonetics: ", phonetics)
             const embed = new EmbedBuilder()
                 .setColor(0xEFFF00)
                 .setTitle(answer.word)
-                .setDescription(phonetics.join(' or '))
+                .setDescription(descriptionField())
                 .setURL(answer.sourceUrls[0])
                 .addFields(answer.meanings.map((meaning, index) => {
                     // console.log(meaning.definitions.length, meaning.definitions, 'definitions end')
