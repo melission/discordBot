@@ -1,5 +1,5 @@
 const { EmbedBuilder, SlashCommandBuilder} = require('discord.js');
-const {request, fetch} = require('undici');
+const {fetch} = require('undici');
 
 
 
@@ -13,7 +13,7 @@ module.exports = {
             .setRequired(true)), 
         async execute(interaction) {
             // console.log('interaction goes here: ', interaction)
-            const trim = (str, max) => (str.length > max ? `${str.slice(0, max-3)}...` : str);
+            // const trim = (str, max) => (str.length > max ? `${str.slice(0, max-3)}...` : str);
             const term = interaction.options.getString('term');
             // console.log('term: ', term)
             // const query = new URLSearchParams({ term });
@@ -24,26 +24,33 @@ module.exports = {
             // console.log("status goes here: ", status)
             const list = await dictResult.json();
             // console.log(Object.keys(list).length)
-            console.log('list: ', typeof list, list)
+            // console.log('list: ', typeof list, list)
     
             if (status === 404) {
                 return interaction.reply(`${list.title} for **${term}**. ${list.resolution}`)
             }
     
             const [answer] = list;
-            console.log("here goes answer: ", typeof answer, answer)
+            // console.log("here goes answer: ", typeof answer, answer)
+            const phonetics = []
+            answer.phonetics.map((phonetic) => {
+                if(phonetic.text) {
+                    phonetics.push(phonetic.text)
+                }
+            })
+            // console.log("phonetics: ", phonetics)
             const embed = new EmbedBuilder()
                 .setColor(0xEFFF00)
                 .setTitle(answer.word)
-                .setDescription(answer.phonetic)
+                .setDescription(phonetics.join(' or '))
                 .setURL(answer.sourceUrls[0])
                 .addFields(answer.meanings.map((meaning, index) => {
                     // console.log(meaning.definitions.length, meaning.definitions, 'definitions end')
                     const defList = [] 
                     meaning.definitions.map((definition) => { defList.push(definition.definition)})
-                    console.log("def List goes here: ", defList.length)
+                    // console.log("def List goes here: ", defList.length)
                     const name = `${index+1}. ${meaning.partOfSpeech}.`
-                    const additionalInfo = `[*There are ${defList.length} meanings, yet only part of them will be displayed.*]\n` 
+                    const additionalInfo = `[*There are ${defList.length} meanings, yet only part of them will be displayed.*]\n\n` 
 
                     if (defList.length > 10) {
                         return {
@@ -65,7 +72,7 @@ module.exports = {
                     }
                 }))
 
-            console.log("embed: ", embed)
+            // console.log("embed: ", embed)
             await interaction.reply( {embeds: [embed]})
         },
 }
